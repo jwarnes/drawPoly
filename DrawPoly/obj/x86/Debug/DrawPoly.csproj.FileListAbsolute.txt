@@ -1,0 +1,9 @@
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\bin\Debug\DrawPoly.exe
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\bin\Debug\DrawPoly.pdb
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\obj\x86\Debug\ResolveAssemblyReference.cache
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Form1.resources
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Properties.Resources.resources
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\obj\x86\Debug\GenerateResource.read.1.tlog
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\obj\x86\Debug\GenerateResource.write.1.tlog
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.exe
+c:\users\f21206\documents\visual studio 2010\Projects\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.pdb
