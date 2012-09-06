@@ -42,6 +42,48 @@ namespace DrawPoly
         {
             get { return (int)MathHelper.GetDistanceBetweenPoints(start, end); }
         }
+
+        public Point LeftPoint
+        {
+            get
+            {
+                if (start.X < end.X)
+                    return start;
+                else
+                    return end;
+            }
+        }
+        public Point RightPoint
+        {
+            get
+            {
+                if (start.X > end.X)
+                    return start;
+                else
+                    return end;
+            }
+        }
+        public Point TopPoint
+        {
+            get
+            {
+                if (start.Y < end.Y)
+                    return start;
+                else
+                    return end;
+            }
+        }
+        public Point BottomPoint
+        {
+            get
+            {
+                if (start.Y > end.Y)
+                    return start;
+                else
+                    return end;
+            }
+        }
+
         public Line()
         {
         }
@@ -72,7 +114,23 @@ namespace DrawPoly
             float x = A.X + AtoB.X * t;
             float y = A.Y + AtoB.Y * t;
 
-            return new Point((int)x, (int)y);
+            Point returnPoint = new Point((int)x, (int)y);
+
+            //dont return a point out of bounds
+            if(line.isPointWithinSegment(point))
+            {
+                if (point.X > line.RightPoint.X)
+                    returnPoint.X = line.RightPoint.X;
+                else if (point.X < line.LeftPoint.X)
+                    returnPoint.X = line.LeftPoint.X;
+
+                if (point.Y > line.BottomPoint.Y)
+                    returnPoint.Y = line.BottomPoint.Y;
+                else if (point.Y < line.TopPoint.Y)
+                    returnPoint.Y = line.TopPoint.Y;
+            }
+
+            return returnPoint;
         }
 
         public Point nearestPoint(Point p)
@@ -84,6 +142,8 @@ namespace DrawPoly
         {
             bool xTest = false;
             bool yTest = false;
+
+            //TODO: this function is returning false on straight lines
 
             if (start.X < end.X && start.X < p.X && p.X < end.X)
             {

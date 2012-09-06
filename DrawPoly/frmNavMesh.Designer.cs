@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmNavMesh));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblMode = new System.Windows.Forms.ToolStripStatusLabel();
-            this.dbg = new System.Windows.Forms.ToolStripStatusLabel();
+            this.help = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.box = new System.Windows.Forms.PictureBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -50,6 +50,7 @@
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.linkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dbg = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.box)).BeginInit();
@@ -61,10 +62,11 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblMode,
+            this.help,
             this.dbg});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 245);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 294);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(427, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(475, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -75,12 +77,12 @@
             this.lblMode.Size = new System.Drawing.Size(38, 17);
             this.lblMode.Text = "Mode";
             // 
-            // dbg
+            // help
             // 
-            this.dbg.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dbg.Name = "dbg";
-            this.dbg.Size = new System.Drawing.Size(16, 17);
-            this.dbg.Text = "...";
+            this.help.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.help.Name = "help";
+            this.help.Size = new System.Drawing.Size(16, 17);
+            this.help.Text = "...";
             // 
             // panel1
             // 
@@ -89,7 +91,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 24);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(427, 221);
+            this.panel1.Size = new System.Drawing.Size(475, 270);
             this.panel1.TabIndex = 2;
             // 
             // box
@@ -97,7 +99,7 @@
             this.box.Dock = System.Windows.Forms.DockStyle.Fill;
             this.box.Location = new System.Drawing.Point(0, 0);
             this.box.Name = "box";
-            this.box.Size = new System.Drawing.Size(427, 221);
+            this.box.Size = new System.Drawing.Size(475, 270);
             this.box.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.box.TabIndex = 0;
             this.box.TabStop = false;
@@ -166,7 +168,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(427, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(475, 24);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -241,17 +243,24 @@
             this.linkToolStripMenuItem.Text = "Link";
             this.linkToolStripMenuItem.Click += new System.EventHandler(this.linkToolStripMenuItem_Click);
             // 
+            // dbg
+            // 
+            this.dbg.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dbg.Name = "dbg";
+            this.dbg.Size = new System.Drawing.Size(25, 17);
+            this.dbg.Text = "dbg";
+            // 
             // frmNavMesh
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(427, 267);
+            this.ClientSize = new System.Drawing.Size(475, 316);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.statusStrip1);
             this.Name = "frmNavMesh";
-            this.Text = "Garden NavMesh";
+            this.Text = "garden Navmesh";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
             this.statusStrip1.ResumeLayout(false);
@@ -273,7 +282,7 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.PictureBox box;
-        private System.Windows.Forms.ToolStripStatusLabel dbg;
+        private System.Windows.Forms.ToolStripStatusLabel help;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -291,6 +300,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripMenuItem linkToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel lblMode;
+        private System.Windows.Forms.ToolStripStatusLabel dbg;
     }
 }
 

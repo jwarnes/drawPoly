@@ -13,7 +13,18 @@ namespace DrawPoly
 
         private Line line1;
         private Line line2;
+        private Polygon[] polys = new Polygon[2];
 
+        public Polygon StartPoly
+        {
+            get { return polys[0]; }
+            set { polys[0] = value;}
+        }
+        public Polygon EndPoly
+        {
+            get { return polys[1]; }
+            set { polys[1] = value; }
+        }
         public Line Line1
         {
             get { return line1; }
@@ -51,9 +62,12 @@ namespace DrawPoly
         {
         }
 
-        public Link(Line line1, Line line2)
+        public Link(Line line1, Line line2, Polygon startP, Polygon endP)
         {
-
+            this.line1 = line1;
+            this.line2 = line2;
+            polys[0] = startP;
+            polys[1] = endP;
         }
         #endregion
 
@@ -68,7 +82,7 @@ namespace DrawPoly
         public void DrawLink(Graphics g)
         {
             Line connectLine = ConnectingLine();
-            g.DrawLine(new Pen(Color.LimeGreen), connectLine.Start, connectLine.End);
+            g.DrawLine(new Pen(Color.LimeGreen, 2), connectLine.Start, connectLine.End);
         }
     }
 }

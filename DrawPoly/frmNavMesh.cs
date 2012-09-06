@@ -14,6 +14,10 @@ namespace DrawPoly
     
     public partial class frmNavMesh : Form
     {
+        #region Constants
+        const int selectLineDist = 5;
+        #endregion
+
         #region Fields, props, constructers and startups
         private List<Point> points = new List<Point>();
         Graphics g;
@@ -28,13 +32,10 @@ namespace DrawPoly
         private int moveVertexIndex;
         private Point movePolyPoint;
 
-        private Link testLink;
+        private List<Link> links = new List<Link>();
         private Line linkStart;
         private Line linkEnd;
         private Line selectLine;
-
-
-        private List<Point> links = new List<Point>();
 
         public enum Mode
         {
@@ -56,11 +57,13 @@ namespace DrawPoly
         
         private void Form1_Load(object sender, EventArgs e)
         {
-            dbg.Text = "";
+            help.Text = "";
             redrawGraphics();
             Render();
         }
         #endregion
+
+        private Point testPoint;
 
         #region Input
 
@@ -126,6 +129,7 @@ namespace DrawPoly
                 if (e.Button == MouseButtons.Right)
                 {
                     selectedPoly = null;
+                    linkPolys = new Polygon[2];
                     linkStart = null;
                     linkEnd = null;
                     mode = Mode.Select;
@@ -136,12 +140,23 @@ namespace DrawPoly
                     {
                         //add first edge
                         linkStart = selectLine;
+                        linkPolys[0] = selectedPoly;
                     }
                     else if (linkStart != null && linkEnd==null && selectLine != null)
                     {
-                        //second edge
-                        linkEnd = selectLine;
-                        //TODO: Create new link here
+                        //dont let people add the same polygon twice
+                        if (selectedPoly.Centroid != linkPolys[0].Centroid)
+                        {
+                            //second edge and create link
+                            linkEnd = selectLine;
+                            linkPolys[1] = selectedPoly;
+                            links.Add(new Link(linkStart, linkEnd, linkPolys[0], linkPolys[1]));
+                            selectedPoly = null;
+                            linkStart = null;
+                            linkEnd = null;
+                            linkPolys = new Polygon[2];
+                            //mode = Mode.Select;
+                        }
                     }
                 }
             }
@@ -162,7 +177,7 @@ namespace DrawPoly
                     MathHelper.GetDistanceBetweenPoints(e.Location, points.First()) <= 20)
                 {
                     currentDrawPoint = points.First();
-                    dbg.Text = "Click to complete the polygon";
+                    help.Text = "Click to complete the polygon";
                 }
             }
             #endregion
@@ -176,7 +191,7 @@ namespace DrawPoly
                     if (poly.Intersects(e.Location))
                     {
                         selectPoly = poly;
-                        dbg.Text = "Click to edit this polygon";
+                        help.Text = "Click to edit this polygon";
                     }
                 }
             }
@@ -184,7 +199,7 @@ namespace DrawPoly
 
             #region Edit Mode
             if (mode == Mode.Edit && selectedPoly != null)
-                dbg.Text = "Edit the vertices or move the polygon";
+                help.Text = "Edit the vertices or move the polygon";
 
             //move the currently selected vertex
             if (mode == Mode.Edit && drag == DragState.Vertex)
@@ -215,19 +230,21 @@ namespace DrawPoly
                 }
                 
                 //iterate through all polygon edges
-                int distance = 1000000;
+                int distance = 1000000000;
                 selectLine = null;
                 foreach (Polygon poly in polygons)
                 {
                     Line l = poly.getClosestEdge(currentDrawPoint);
                     Point p = l.nearestPoint(currentDrawPoint);
 
-                    int d = (int)MathHelper.GetDistanceBetweenPoints(currentDrawPoint, p);
+                    //TODO: Remove
+                    testPoint = p;
 
-                    if (l.isPointWithinSegment(p) && d <= 30)
+                    int d = (int)MathHelper.GetDistanceBetweenPoints(p, currentDrawPoint);
+                    dbg.Text = l.isPointWithinSegment(p).ToString() + ", " + d.ToString();
+
+                    if (l.isPointWithinSegment(p) && d <= selectLineDist)
                     {
-                        if (selectedPoly == null)
-                        {
                             //found a closer edge
                             if (d < distance)
                             {
@@ -235,7 +252,6 @@ namespace DrawPoly
                                 distance = d;
                                 selectedPoly = poly;
                             }
-                        }
                     }
 
                 }
@@ -271,8 +287,8 @@ namespace DrawPoly
                             drag = DragState.Vertex;
                         }
                     }
-
-               
+                    //break links
+                    breakAllLinks(selectedPoly);
                 }
                
 
@@ -303,14 +319,14 @@ namespace DrawPoly
             
             //setup our output messages
             if (mode == Mode.Draw && points.Count == 0)
-                dbg.Text = "Click to start drawing a new polygon or right click to exit drawing mode";
+                help.Text = "Click to start drawing a new polygon or right click to exit drawing mode";
 
             //draw current line
             if (points.Count > 0 && mode == Mode.Draw)
             {
-                dbg.Text = "Click to draw another vertex or right click to delete the previous one";
+                help.Text = "Click to draw another vertex or right click to delete the previous one";
                 if (points.Count > 2 && MathHelper.GetDistanceBetweenPoints(currentDrawPoint, points.First()) <= 20)
-                    dbg.Text = "Click to complete the polygon";
+                    help.Text = "Click to complete the polygon";
                 g.DrawLine(new Pen(Color.Orange, 3), points.Last<Point>(), currentDrawPoint);
                 
                 //if more than one point, link them all together
@@ -356,6 +372,17 @@ namespace DrawPoly
             }
             #endregion
 
+            #region Draw Links in list
+            if (links.Count > 0)
+            {
+                foreach (Link link in links)
+                {
+                    Line l = link.ConnectingLine();
+                    g.DrawLine(new Pen(Color.Turquoise, 3), l.Start, l.End);
+                }
+            }
+            #endregion
+
             #region Draw Selected Polygon
             if (mode == Mode.Edit || mode == Mode.Select  & selectedPoly != null)
             {
@@ -377,7 +404,7 @@ namespace DrawPoly
                             new SolidBrush(Color.FromArgb(100, Color.Orange)),
                             new Rectangle(p, new Size(15, 15)));
 
-                        dbg.Text = "Drag this vertex around if you want";
+                        help.Text = "Drag this vertex around if you want";
                         continue;
                     }
 
@@ -393,12 +420,18 @@ namespace DrawPoly
             }
             #endregion
 
-            #region Draw Links
+            #region Draw Selected Edge for Link mode
             if (mode == Mode.Link)
             {
-                dbg.Text = "Select an edge";
+                g.FillEllipse(new SolidBrush(Color.Orange), new Rectangle(testPoint, new Size(8, 8)));
+                help.Text = "Select an edge";
                 if (selectLine != null)
-                    g.DrawLine(new Pen(Color.LimeGreen, 5), selectLine.Start, selectLine.End);
+                {
+                    if(linkPolys[0] == null)
+                        g.DrawLine(new Pen(Color.LimeGreen, 5), selectLine.Start, selectLine.End);
+                    if(linkPolys[0] != null && linkPolys[0].Centroid != selectedPoly.Centroid)
+                        g.DrawLine(new Pen(Color.LimeGreen, 5), selectLine.Start, selectLine.End);
+                }
             }
             #endregion
 
@@ -419,6 +452,21 @@ namespace DrawPoly
                 g.SmoothingMode = SmoothingMode.HighQuality;
             }
 
+        #endregion
+
+        #region Update
+        private void breakAllLinks(Polygon poly)
+        {
+            foreach (Link link in links)
+            {
+                if (link.StartPoly.Centroid == poly.Centroid || link.EndPoly.Centroid == poly.Centroid)
+                {
+                    links.Remove(link);
+                    break;
+                }
+
+            }
+        }
         #endregion
 
         #region UI Events

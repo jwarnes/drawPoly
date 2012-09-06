@@ -80,7 +80,6 @@ namespace DrawPoly
             g.FillPolygon(new SolidBrush(fill), this.VerticesArray);
         }
 
-
         #region Calculations
 
         public bool IsConcave()
@@ -198,7 +197,7 @@ namespace DrawPoly
         public Line getClosestEdge(Point p)
         {
             List<Line> lines = getLines();
-            Line closestLine = new Line();
+            Line closestLine = new Line(new Point(50, 50), new Point(100, 100));
             double minDistance = 10000000;
 
             //iterate through all the lines, and compare distances
