@@ -12,7 +12,7 @@ C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.pdb
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\bin\Debug\DrawPoly.exe
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\bin\Debug\DrawPoly.pdb
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Form1.resources
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Properties.Resources.resources
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.frmNavMesh.resources

@@ -38,6 +38,10 @@ namespace DrawPoly
                 return new Point((start.X + end.X) / 2, (start.Y + end.Y) / 2);
             }
         }
+        public int Length
+        {
+            get { return (int)MathHelper.GetDistanceBetweenPoints(start, end); }
+        }
         public Line()
         {
         }
@@ -74,6 +78,34 @@ namespace DrawPoly
         public Point nearestPoint(Point p)
         {
             return Line.nearestPointOnLine(this, p);
+        }
+
+        public bool isPointWithinSegment(Point p)
+        {
+            bool xTest = false;
+            bool yTest = false;
+
+            if (start.X < end.X && start.X < p.X && p.X < end.X)
+            {
+                xTest = true;
+            }
+            if (start.X > end.X && start.X > p.X && p.X > end.X)
+            {
+                xTest = true;
+            }
+            if (start.Y < end.Y && start.Y < p.Y && p.Y < end.Y)
+            {
+                yTest = true;
+            }
+            if (start.Y > end.Y && start.Y > p.Y && p.Y > end.Y)
+            {
+                yTest = true;
+            }
+
+            if (xTest && yTest)
+                return true;
+            else
+                return false;
         }
     }
 }

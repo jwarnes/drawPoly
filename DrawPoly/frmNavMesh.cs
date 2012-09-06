@@ -12,7 +12,7 @@ using Rectangle = System.Drawing.Rectangle;
 namespace DrawPoly
 {
     
-    public partial class Form1 : Form
+    public partial class frmNavMesh : Form
     {
         #region Fields, props, constructers and startups
         private List<Point> points = new List<Point>();
@@ -25,13 +25,19 @@ namespace DrawPoly
         private Polygon selectedPoly;
 
         private int moveVertexIndex;
-        private Point movePolyCentroid;
+        private Point movePolyPoint;
+
+        private Link testLink;
+        private Line linkStart;
+        private Line linkEnd;
+        private Line selectLine;
+
 
         private List<Point> links = new List<Point>();
 
         public enum Mode
         {
-            Select, Draw, Edit, Move
+            Select, Draw, Edit, Link
         }
 
         private enum DragState
@@ -42,7 +48,7 @@ namespace DrawPoly
         Mode mode = Mode.Select;
         DragState drag = DragState.None;
 
-        public Form1()
+        public frmNavMesh()
         {
             InitializeComponent();
         }
@@ -113,6 +119,20 @@ namespace DrawPoly
             }
             #endregion
 
+            #region Link Mode
+            if (mode == Mode.Link)
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    mode = Mode.Select;
+                }
+                if (e.Button == MouseButtons.Left)
+                {
+                    //TODO: linking logic
+                }
+            }
+            #endregion
+
         }
 
         private void box_MouseMove(object sender, MouseEventArgs e)
@@ -139,11 +159,10 @@ namespace DrawPoly
                 selectPoly = null;
                 foreach (Polygon poly in polygons)
                 {
-                    dbg.Text = "Select a polygon to edit";
                     if (poly.Intersects(e.Location))
                     {
                         selectPoly = poly;
-                        dbg.Text = "Click to select this polygon";
+                        dbg.Text = "Click to edit this polygon";
                     }
                 }
             }
@@ -161,8 +180,8 @@ namespace DrawPoly
             //drag the whole polygon
             if (mode == Mode.Edit && drag == DragState.Polygon)
             {
-                int deltaX = e.X - movePolyCentroid.X;
-                int deltaY = e.Y - movePolyCentroid.Y;
+                int deltaX = e.X - movePolyPoint.X;
+                int deltaY = e.Y - movePolyPoint.Y;
 
                 for (int i = 0; i < selectedPoly.Vertices.Count; i++)
                 {
@@ -170,9 +189,40 @@ namespace DrawPoly
                     oldPoint.Offset(deltaX, deltaY);
                     selectedPoly.Vertices[i] = oldPoint;
                 }
-                movePolyCentroid = e.Location;
+                movePolyPoint = e.Location;
             }
             #endregion
+
+            #region Link Mode
+            if (mode == Mode.Link)
+            {
+                if (linkStart == null)
+                {
+                }
+                
+                //iterate through all polygon edges
+                int distance = 1000000;
+                selectLine = null;
+                foreach (Polygon poly in polygons)
+                {
+                    Line l = poly.getClosestEdge(currentDrawPoint);
+                    Point p = l.nearestPoint(currentDrawPoint);
+
+                    if (l.isPointWithinSegment(p))
+                    {
+                        int d = (int)MathHelper.GetDistanceBetweenPoints(currentDrawPoint, p);
+
+                        if (d < distance)
+                        {
+                            selectLine = l;
+                            distance = d;
+                        }
+                    }
+
+                }
+            }
+            #endregion
+
             this.Render();
         }
 
@@ -195,7 +245,7 @@ namespace DrawPoly
 
                     if (selectedPoly.Intersects(e.Location))
                     {
-                        movePolyCentroid = e.Location;
+                        movePolyPoint = e.Location;
                         drag = DragState.Polygon;
                     }
 
@@ -229,6 +279,7 @@ namespace DrawPoly
         #region Graphics
         private void Render()
         {
+            lblMode.Text = mode.ToString();
             g.Clear(Color.CornflowerBlue);
             if (image != null)
             {
@@ -322,6 +373,15 @@ namespace DrawPoly
             }
             #endregion
 
+            #region Draw Links
+            if (mode == Mode.Link)
+            {
+                dbg.Text = "Select an edge";
+                if (selectLine != null)
+                    g.DrawLine(new Pen(Color.LimeGreen, 5), selectLine.Start, selectLine.End);
+            }
+            #endregion
+
             //draw to the screen
             box.Refresh();
         }
@@ -343,12 +403,7 @@ namespace DrawPoly
 
         #region UI Events
 
-        private void drawNewPolyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            mode = Mode.Draw;
-        }
-
-        private void addToolStripMenuItem_Click(object sender, EventArgs e)
+        private void loadNewBG()
         {
             OpenFileDialog open = new OpenFileDialog();
             open.Title = "Load image as background";
@@ -358,13 +413,26 @@ namespace DrawPoly
             if (open.FileName != "")
             {
                 this.image = Image.FromFile(open.FileName);
-                this.Size = image.Size;
+                this.Size = new Size(image.Size.Width+18, image.Size.Height+95);
                 redrawGraphics();
+                Render();
             }
         }
 
+        private void btnDrawPoly_Click(object sender, EventArgs e)
+        {
+            mode = Mode.Draw;
+        }
+        private void toolStripButton1_Click(object sender, EventArgs e)
+            {
+                loadNewBG();
+            }
+        private void linkToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            linkStart = null;
+            linkEnd = null;
+            mode = Mode.Link;
+        }
         #endregion
-
-
     }
 }

@@ -80,10 +80,6 @@ namespace DrawPoly
             g.FillPolygon(new SolidBrush(fill), this.VerticesArray);
         }
 
-        public void setVertexByIndex(int index, Point p)
-        {
-            
-        }
 
         #region Calculations
 
