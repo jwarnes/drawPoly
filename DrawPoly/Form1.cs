@@ -7,123 +7,364 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using Rectangle = System.Drawing.Rectangle;
 
 namespace DrawPoly
 {
-    //clear up ambiguity between rectangles
-    using Rectangle = System.Drawing.Rectangle;
     
     public partial class Form1 : Form
     {
-        #region Fields
+        #region Fields, props, constructers and startups
         private List<Point> points = new List<Point>();
         Graphics g;
-        private int dd = 0;
         private Point currentDrawPoint;
+        private Image image;
 
-        //private Polygon testPoly = new Polygon();
+        private List<Polygon> polygons = new List<Polygon>();
+        private Polygon selectPoly;
+        private Polygon selectedPoly;
+
+        private int moveVertexIndex;
+        private Point movePolyCentroid;
+
+        private List<Point> links = new List<Point>();
 
         public enum Mode
         {
-            Null, DrawNew
+            Select, Draw, Edit, Move
         }
 
-        Mode mode = Mode.Null;
+        private enum DragState
+        {
+            None, Vertex, Polygon
+        }
+
+        Mode mode = Mode.Select;
+        DragState drag = DragState.None;
+
         public Form1()
         {
             InitializeComponent();
         }
-        #endregion
-
+        
         private void Form1_Load(object sender, EventArgs e)
         {
-            box.Image = new Bitmap(panel1.Width, panel1.Height);
-            g = Graphics.FromImage(box.Image);
+            dbg.Text = "";
+            redrawGraphics();
+            Render();
         }
+        #endregion
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            g.Clear(Color.CornflowerBlue);
-        }
+        #region Input
 
-        private void Form1_SizeChanged(object sender, EventArgs e)
+        private void box_MouseClick(object sender, MouseEventArgs e)
         {
-            box.Image = new Bitmap(panel1.Width, panel1.Height);
-            g = Graphics.FromImage(box.Image);
-            dbg.Text = panel1.Width.ToString();
-        }
 
-        private void drawNewPolyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            mode = Mode.DrawNew;
+            #region Drawing Mode
+
+            if (mode == Mode.Draw)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (points.Count > 2 && MathHelper.GetDistanceBetweenPoints(e.Location, points.First()) <= 20)
+                    {
+                        polygons.Add(new Polygon(points));
+                        points.Clear();
+                    }
+                    else
+                        points.Add(currentDrawPoint);
+                }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    if (points.Count > 1)
+                    {
+                        points.RemoveAt(points.Count - 1);
+                    }
+                    else if (points.Count == 1)
+                    {
+                        points.Clear();
+                    }
+                    else if (points.Count == 0)
+                    {
+                        mode = Mode.Select;
+                    }
+                }
+            }
+            #endregion
+
+            #region Select Mode
+            if (mode == Mode.Select && selectPoly != null)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    selectedPoly = selectPoly;
+                    selectPoly = null;
+
+                    mode = Mode.Edit;
+                }
+            }
+            #endregion
+
+            #region Edit Mode
+            if (mode == Mode.Edit && e.Button == MouseButtons.Right)
+            {
+                mode = Mode.Select;
+                selectedPoly = null;
+            }
+            #endregion
+
         }
 
         private void box_MouseMove(object sender, MouseEventArgs e)
         {
-            dbg.Text = points.Count.ToString();
-            if (mode == Mode.DrawNew)
+            currentDrawPoint = e.Location;
+
+            #region Drawing mode
+            if (mode == Mode.Draw)
             {
-                //update the current point 
-                currentDrawPoint = e.Location;
                 //lock on to the first point if the mouse is close enough and we have enough
                 //points to make a closed polygon
                 if (points.Count > 2 &&
                     MathHelper.GetDistanceBetweenPoints(e.Location, points.First()) <= 20)
                 {
                     currentDrawPoint = points.First();
+                    dbg.Text = "Click to complete the polygon";
                 }
             }
+            #endregion
+
+            #region Select Mode
+            if (mode == Mode.Select && polygons.Count > 0)
+            {
+                selectPoly = null;
+                foreach (Polygon poly in polygons)
+                {
+                    dbg.Text = "Select a polygon to edit";
+                    if (poly.Intersects(e.Location))
+                    {
+                        selectPoly = poly;
+                        dbg.Text = "Click to select this polygon";
+                    }
+                }
+            }
+            #endregion
+
+            #region Edit Mode
+            if (mode == Mode.Edit && selectedPoly != null)
+                dbg.Text = "Edit the vertices or move the polygon";
+
+            //move the currently selected vertex
+            if (mode == Mode.Edit && drag == DragState.Vertex)
+            {
+                selectedPoly.Vertices[moveVertexIndex] = e.Location;
+            }
+            //drag the whole polygon
+            if (mode == Mode.Edit && drag == DragState.Polygon)
+            {
+                int deltaX = e.X - movePolyCentroid.X;
+                int deltaY = e.Y - movePolyCentroid.Y;
+
+                for (int i = 0; i < selectedPoly.Vertices.Count; i++)
+                {
+                    Point oldPoint = selectedPoly.Vertices[i];
+                    oldPoint.Offset(deltaX, deltaY);
+                    selectedPoly.Vertices[i] = oldPoint;
+                }
+                movePolyCentroid = e.Location;
+            }
+            #endregion
             this.Render();
         }
 
-        private void box_MouseClick(object sender, MouseEventArgs e)
+        private void box_MouseDown(object sender, MouseEventArgs e)
         {
-            if (mode == Mode.DrawNew)
+            
+            if (mode == Mode.Edit && e.Button == MouseButtons.Left)
             {
-                //create a complete polygon
-                if (points.Count > 2 &&
-                    MathHelper.GetDistanceBetweenPoints(e.Location, points.First()) <= 20)
+
+                if (drag == DragState.None)
                 {
-                    //testPoly.Points = points;
-                    mode = Mode.Null;
+
+                    //drag polygon
+                    /*
+                    if (MathHelper.GetDistanceBetweenPoints(e.Location, selectedPoly.Centroid) <= 25)
+                    {
+                        movePolyCentroid = selectedPoly.Centroid;
+                        drag = DragState.Polygon;
+                    }*/
+
+                    if (selectedPoly.Intersects(e.Location))
+                    {
+                        movePolyCentroid = e.Location;
+                        drag = DragState.Polygon;
+                    }
+
+                    //drag vertex
+                    for (int i = 0; i < selectedPoly.Vertices.Count; i++)
+                    {
+                        if (MathHelper.GetDistanceBetweenPoints(e.Location, selectedPoly.Vertices[i]) <= 15)
+                        {
+                            moveVertexIndex = i;
+                            drag = DragState.Vertex;
+                        }
+                    }
+
+               
                 }
-                else
-                    points.Add(currentDrawPoint);
+               
+
             }
-
         }
 
-        private void box_Paint(object sender, PaintEventArgs e)
+        private void box_MouseUp(object sender, MouseEventArgs e)
         {
-           
+            if (drag == DragState.Vertex || drag == DragState.Polygon)
+            {
+                drag = DragState.None;
+            }
         }
+
+        #endregion
+
+        #region Graphics
         private void Render()
         {
             g.Clear(Color.CornflowerBlue);
+            if (image != null)
+            {
+                g.DrawImage(image, new Point(0, 0));
+            }
+
+            #region Draw Current Polygon
+            
+            //setup our output messages
+            if (mode == Mode.Draw && points.Count == 0)
+                dbg.Text = "Click to start drawing a new polygon or right click to exit drawing mode";
 
             //draw current line
-            if (points.Count > 0 && mode == Mode.DrawNew)
+            if (points.Count > 0 && mode == Mode.Draw)
             {
-                g.DrawLine(new Pen(Color.Red), points.Last<Point>(), currentDrawPoint);
-                GraphicsPath path = new GraphicsPath();
-
+                dbg.Text = "Click to draw another vertex or right click to delete the previous one";
+                if (points.Count > 2 && MathHelper.GetDistanceBetweenPoints(currentDrawPoint, points.First()) <= 20)
+                    dbg.Text = "Click to complete the polygon";
+                g.DrawLine(new Pen(Color.Orange, 3), points.Last<Point>(), currentDrawPoint);
+                
                 //if more than one point, link them all together
                 if (points.Count > 1)
                 {
-                    g.DrawLines(new Pen(Color.Red), points.ToArray<Point>());
+                    g.DrawLines(new Pen(Color.Orange, 2), points.ToArray<Point>());
+                }
+                foreach (Point p in points)
+                {
+                    p.Offset(-5, -5);
+                    g.FillEllipse(
+                        new SolidBrush(Color.Orange),
+                        new Rectangle(p, new Size(9, 9)));
+                    g.DrawEllipse(
+                        new Pen(Color.Orange, 2),
+                        new Rectangle(p, new Size(9, 9)));
                 }
             }
-            foreach (Point p in points)
+            #endregion
+
+            #region Draw Polygons in list
+            if (polygons.Count > 0)
             {
-                g.FillRectangle(
-                    new SolidBrush(Color.Red),
-                    new Rectangle(p, new Size(3,3)));
+                foreach (Polygon poly in polygons)
+                {
+                    if (poly != selectPoly && poly != selectedPoly)
+                        poly.Draw(g);
+                    else if(poly == selectPoly)
+                    {   
+                        Color fill = poly.IsConcave() ? Color.FromArgb(100, Color.Red) : Color.FromArgb(100, Color.MediumBlue);
+                        g.FillPolygon(new SolidBrush(fill), selectPoly.VerticesArray);
+
+                        g.DrawPolygon(new Pen(Color.Orange, 4), selectPoly.VerticesArray);
+                    }
+                }
             }
+            #endregion
+
+            #region Draw Selected Polygon
+            if (mode == Mode.Edit && selectedPoly != null)
+            {
+
+                //draw outline
+                g.DrawPolygon(new Pen(Color.Orange, 3), selectedPoly.VerticesArray);
+                g.FillPolygon(new SolidBrush(Color.FromArgb(50, Color.Orange)), selectedPoly.VerticesArray);
+
+                //draw verts
+                foreach (Point p in selectedPoly.Vertices)
+                {
+                    if (MathHelper.GetDistanceBetweenPoints(p, currentDrawPoint) <= 12)
+                    {
+                        p.Offset(-7, -7);
+                        g.DrawEllipse(
+                            new Pen(Color.Orange, 2),
+                            new Rectangle(p, new Size(15, 15)));
+                        g.FillEllipse(
+                            new SolidBrush(Color.FromArgb(100, Color.Orange)),
+                            new Rectangle(p, new Size(15, 15)));
+
+                        dbg.Text = "Drag this vertex around if you want";
+                        continue;
+                    }
+
+
+                    p.Offset(-5, -5);
+                    g.FillEllipse(
+                        new SolidBrush(Color.Orange),
+                        new Rectangle(p, new Size(9, 9)));
+                    g.DrawEllipse(
+                        new Pen(Color.Orange, 2),
+                        new Rectangle(p, new Size(9, 9)));
+                }
+            }
+            #endregion
+
             //draw to the screen
             box.Refresh();
         }
+
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            redrawGraphics();
+            this.Render();
+        }
+
+        private void redrawGraphics()
+            {
+                box.Image = new Bitmap(panel1.Width, panel1.Height);
+                g = Graphics.FromImage(box.Image);
+                g.SmoothingMode = SmoothingMode.HighQuality;
+            }
+
+        #endregion
+
+        #region UI Events
+
+        private void drawNewPolyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            mode = Mode.Draw;
+        }
+
+        private void addToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog open = new OpenFileDialog();
+            open.Title = "Load image as background";
+            open.Filter = "Image Files|*.png;*.jpg;*.bmp;*.gif";
+            open.ShowDialog();
+
+            if (open.FileName != "")
+            {
+                this.image = Image.FromFile(open.FileName);
+                this.Size = image.Size;
+                redrawGraphics();
+            }
+        }
+
+        #endregion
+
 
     }
 }
