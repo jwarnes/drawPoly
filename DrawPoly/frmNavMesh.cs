@@ -125,6 +125,9 @@ namespace DrawPoly
             {
                 if (e.Button == MouseButtons.Right)
                 {
+                    selectedPoly = null;
+                    linkStart = null;
+                    linkEnd = null;
                     mode = Mode.Select;
                 }
                 if (e.Button == MouseButtons.Left)
@@ -221,14 +224,17 @@ namespace DrawPoly
 
                     int d = (int)MathHelper.GetDistanceBetweenPoints(currentDrawPoint, p);
 
-                    if (!poly.Equals(selectedPoly) && l.isPointWithinSegment(p) && d <= 30)
+                    if (l.isPointWithinSegment(p) && d <= 30)
                     {
-                        //found a closer edge
-                        if (d < distance)
+                        if (selectedPoly == null)
                         {
-                            selectLine = l;
-                            distance = d;
-                            selectedPoly = poly;
+                            //found a closer edge
+                            if (d < distance)
+                            {
+                                selectLine = l;
+                                distance = d;
+                                selectedPoly = poly;
+                            }
                         }
                     }
 
@@ -351,7 +357,7 @@ namespace DrawPoly
             #endregion
 
             #region Draw Selected Polygon
-            if (mode == Mode.Edit && selectedPoly != null)
+            if (mode == Mode.Edit || mode == Mode.Select  & selectedPoly != null)
             {
 
                 //draw outline
