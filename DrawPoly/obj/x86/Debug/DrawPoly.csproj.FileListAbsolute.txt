@@ -25,3 +25,12 @@ E:\git\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.frmNavMesh.resources
 E:\git\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Properties.Resources.resources
 E:\git\DrawPoly\DrawPoly\obj\x86\Debug\GenerateResource.read.1.tlog
 E:\git\DrawPoly\DrawPoly\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\f21921\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.exe
+C:\Users\f21921\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.pdb
+C:\Users\f21921\drawPoly\DrawPoly\bin\Debug\DrawPoly.exe
+C:\Users\f21921\drawPoly\DrawPoly\bin\Debug\DrawPoly.pdb
+C:\Users\f21921\drawPoly\DrawPoly\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\f21921\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.frmNavMesh.resources
+C:\Users\f21921\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Properties.Resources.resources
+C:\Users\f21921\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\f21921\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.write.1.tlog

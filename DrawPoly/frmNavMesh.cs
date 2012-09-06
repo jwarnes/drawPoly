@@ -217,17 +217,11 @@ namespace DrawPoly
                 foreach (Polygon poly in polygons)
                 {
                     Line l = poly.getClosestEdge(currentDrawPoint);
-
-                    if (linkStart != null && l.isIdentical(linkStart))
-                        continue;
-                    if (linkEnd != null && l.isIdentical(linkEnd))
-                        continue;
-
                     Point p = l.nearestPoint(currentDrawPoint);
 
                     int d = (int)MathHelper.GetDistanceBetweenPoints(currentDrawPoint, p);
 
-                    if (l.isPointWithinSegment(p) && d <= 30)
+                    if (!poly.Equals(selectedPoly) && l.isPointWithinSegment(p) && d <= 30)
                     {
                         //found a closer edge
                         if (d < distance)
@@ -336,14 +330,21 @@ namespace DrawPoly
             {
                 foreach (Polygon poly in polygons)
                 {
-                    if (poly != selectPoly && poly != selectedPoly)
-                        poly.Draw(g);
-                    else if(poly == selectPoly)
-                    {   
-                        Color fill = poly.IsConcave() ? Color.FromArgb(100, Color.Red) : Color.FromArgb(100, Color.MediumBlue);
-                        g.FillPolygon(new SolidBrush(fill), selectPoly.VerticesArray);
+                    if (mode == Mode.Select || mode == Mode.Edit)
+                    {
+                        if (poly != selectPoly && poly != selectedPoly)
+                            poly.Draw(g);
+                        else if (poly == selectPoly)
+                        {
+                            Color fill = poly.IsConcave() ? Color.FromArgb(100, Color.Red) : Color.FromArgb(100, Color.MediumBlue);
+                            g.FillPolygon(new SolidBrush(fill), selectPoly.VerticesArray);
 
-                        g.DrawPolygon(new Pen(Color.Orange, 4), selectPoly.VerticesArray);
+                            g.DrawPolygon(new Pen(Color.Orange, 4), selectPoly.VerticesArray);
+                        }
+                    }
+                    else
+                    {
+                        poly.Draw(g);
                     }
                 }
             }
