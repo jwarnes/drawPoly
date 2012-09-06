@@ -107,5 +107,20 @@ namespace DrawPoly
             else
                 return false;
         }
+
+        public bool isIdentical(Line l)
+        {
+            if (
+                l.Start.X == start.X
+                && l.Start.Y == start.Y
+                && l.End.X == end.X
+                && l.End.Y == end.Y)
+            {
+                return true;
+            }else
+            {
+                return false;
+            }
+        }
     }
 }

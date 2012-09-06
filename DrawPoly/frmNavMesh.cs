@@ -23,6 +23,7 @@ namespace DrawPoly
         private List<Polygon> polygons = new List<Polygon>();
         private Polygon selectPoly;
         private Polygon selectedPoly;
+        private Polygon[] linkPolys = new Polygon[2];
 
         private int moveVertexIndex;
         private Point movePolyPoint;
@@ -128,7 +129,17 @@ namespace DrawPoly
                 }
                 if (e.Button == MouseButtons.Left)
                 {
-                    //TODO: linking logic
+                    if (linkStart == null && selectLine != null)
+                    {
+                        //add first edge
+                        linkStart = selectLine;
+                    }
+                    else if (linkStart != null && linkEnd==null && selectLine != null)
+                    {
+                        //second edge
+                        linkEnd = selectLine;
+                        //TODO: Create new link here
+                    }
                 }
             }
             #endregion
@@ -196,7 +207,7 @@ namespace DrawPoly
             #region Link Mode
             if (mode == Mode.Link)
             {
-                if (linkStart == null)
+                if (linkStart != null && linkEnd == null)
                 {
                 }
                 
@@ -206,16 +217,24 @@ namespace DrawPoly
                 foreach (Polygon poly in polygons)
                 {
                     Line l = poly.getClosestEdge(currentDrawPoint);
+
+                    if (linkStart != null && l.isIdentical(linkStart))
+                        continue;
+                    if (linkEnd != null && l.isIdentical(linkEnd))
+                        continue;
+
                     Point p = l.nearestPoint(currentDrawPoint);
 
-                    if (l.isPointWithinSegment(p))
-                    {
-                        int d = (int)MathHelper.GetDistanceBetweenPoints(currentDrawPoint, p);
+                    int d = (int)MathHelper.GetDistanceBetweenPoints(currentDrawPoint, p);
 
+                    if (l.isPointWithinSegment(p) && d <= 30)
+                    {
+                        //found a closer edge
                         if (d < distance)
                         {
                             selectLine = l;
                             distance = d;
+                            selectedPoly = poly;
                         }
                     }
 
@@ -236,12 +255,6 @@ namespace DrawPoly
                 {
 
                     //drag polygon
-                    /*
-                    if (MathHelper.GetDistanceBetweenPoints(e.Location, selectedPoly.Centroid) <= 25)
-                    {
-                        movePolyCentroid = selectedPoly.Centroid;
-                        drag = DragState.Polygon;
-                    }*/
 
                     if (selectedPoly.Intersects(e.Location))
                     {

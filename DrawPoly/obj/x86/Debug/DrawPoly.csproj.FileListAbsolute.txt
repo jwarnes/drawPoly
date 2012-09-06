@@ -16,3 +16,12 @@ C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Properties
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Users\En\Documents\GitHub\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.frmNavMesh.resources
+E:\git\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.exe
+E:\git\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.pdb
+E:\git\DrawPoly\DrawPoly\bin\Debug\DrawPoly.exe
+E:\git\DrawPoly\DrawPoly\bin\Debug\DrawPoly.pdb
+E:\git\DrawPoly\DrawPoly\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\git\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.frmNavMesh.resources
+E:\git\DrawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Properties.Resources.resources
+E:\git\DrawPoly\DrawPoly\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\git\DrawPoly\DrawPoly\obj\x86\Debug\GenerateResource.write.1.tlog
