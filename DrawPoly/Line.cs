@@ -117,8 +117,9 @@ namespace DrawPoly
             Point returnPoint = new Point((int)x, (int)y);
 
             //dont return a point out of bounds
-            if(line.isPointWithinSegment(point))
+            if(!line.isPointWithinSegment(point) && false)
             {
+                //TODO: Correct pointOnLine function to not return pounts out of segment range
                 if (point.X > line.RightPoint.X)
                     returnPoint.X = line.RightPoint.X;
                 else if (point.X < line.LeftPoint.X)
@@ -143,21 +144,19 @@ namespace DrawPoly
             bool xTest = false;
             bool yTest = false;
 
-            //TODO: this function is returning false on straight lines
-
-            if (start.X < end.X && start.X < p.X && p.X < end.X)
+            if (start.X <= end.X && start.X <= p.X && p.X <= end.X)
             {
                 xTest = true;
             }
-            if (start.X > end.X && start.X > p.X && p.X > end.X)
+            if (start.X >= end.X && start.X >= p.X && p.X >= end.X)
             {
                 xTest = true;
             }
-            if (start.Y < end.Y && start.Y < p.Y && p.Y < end.Y)
+            if (start.Y <= end.Y && start.Y <= p.Y && p.Y <= end.Y)
             {
                 yTest = true;
             }
-            if (start.Y > end.Y && start.Y > p.Y && p.Y > end.Y)
+            if (start.Y >= end.Y && start.Y >= p.Y && p.Y >= end.Y)
             {
                 yTest = true;
             }

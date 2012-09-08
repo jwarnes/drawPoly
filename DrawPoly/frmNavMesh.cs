@@ -15,7 +15,7 @@ namespace DrawPoly
     public partial class frmNavMesh : Form
     {
         #region Constants
-        const int selectLineDist = 5;
+        const int selectLineDist = 12;
         #endregion
 
         #region Fields, props, constructers and startups
@@ -36,6 +36,8 @@ namespace DrawPoly
         private Line linkStart;
         private Line linkEnd;
         private Line selectLine;
+
+        private List<CNode> cnodes = new List<CNode>();
 
         public enum Mode
         {
@@ -58,12 +60,11 @@ namespace DrawPoly
         private void Form1_Load(object sender, EventArgs e)
         {
             help.Text = "";
+            dbg.Text = "";
             redrawGraphics();
             Render();
         }
         #endregion
-
-        private Point testPoint;
 
         #region Input
 
@@ -237,11 +238,7 @@ namespace DrawPoly
                     Line l = poly.getClosestEdge(currentDrawPoint);
                     Point p = l.nearestPoint(currentDrawPoint);
 
-                    //TODO: Remove
-                    testPoint = p;
-
                     int d = (int)MathHelper.GetDistanceBetweenPoints(p, currentDrawPoint);
-                    dbg.Text = l.isPointWithinSegment(p).ToString() + ", " + d.ToString();
 
                     if (l.isPointWithinSegment(p) && d <= selectLineDist)
                     {
@@ -423,7 +420,6 @@ namespace DrawPoly
             #region Draw Selected Edge for Link mode
             if (mode == Mode.Link)
             {
-                g.FillEllipse(new SolidBrush(Color.Orange), new Rectangle(testPoint, new Size(8, 8)));
                 help.Text = "Select an edge";
                 if (selectLine != null)
                 {
@@ -431,6 +427,20 @@ namespace DrawPoly
                         g.DrawLine(new Pen(Color.LimeGreen, 5), selectLine.Start, selectLine.End);
                     if(linkPolys[0] != null && linkPolys[0].Centroid != selectedPoly.Centroid)
                         g.DrawLine(new Pen(Color.LimeGreen, 5), selectLine.Start, selectLine.End);
+                }
+                if (linkStart != null)
+                {
+                    //TODO improve linking visuals
+                }
+            }
+            #endregion
+
+            #region Draw Nodes
+            if (cnodes.Count > 0)
+            {
+                foreach (CNode node in cnodes)
+                {
+                    node.Draw(g);
                 }
             }
             #endregion
@@ -457,14 +467,57 @@ namespace DrawPoly
         #region Update
         private void breakAllLinks(Polygon poly)
         {
+            List<Link> removeLinks = new List<Link>();
             foreach (Link link in links)
             {
                 if (link.StartPoly.Centroid == poly.Centroid || link.EndPoly.Centroid == poly.Centroid)
                 {
-                    links.Remove(link);
-                    break;
+                    removeLinks.Add(link);
                 }
 
+            }
+            foreach (Link link in removeLinks)
+            {
+                links.Remove(link);
+            }
+        }
+
+        private void CreateNodeMap()
+        {
+            cnodes.Clear();
+
+            //centroids
+            foreach (Polygon poly in polygons)
+            {
+                CNode n = new CNode(poly.Centroid);
+                n.Associate(poly);
+
+                cnodes.Add(n);
+            }
+
+            //midpoints
+            foreach (Link link in links)
+            {
+                CNode n = new CNode(link.ConnectingLine().Midpoint);
+                n.Associate(link.StartPoly);
+                n.Associate(link.EndPoly);
+
+                cnodes.Add(n);
+            }
+
+            //connect nodes
+            foreach (CNode n in cnodes)
+            {
+                foreach (CNode n2 in cnodes)
+                {
+                    if (n == n2)
+                        continue;
+                    foreach (Polygon poly in n.Polygons)
+                    {
+                        if (n2.isAssociated(poly))
+                            n.Add(n2);
+                    }
+                }
             }
         }
         #endregion
@@ -501,6 +554,12 @@ namespace DrawPoly
             linkEnd = null;
             mode = Mode.Link;
         }
+        private void generateNodemapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CreateNodeMap();
+        }
         #endregion
+
+        //TODO: Implement Node, CNode, and NodeMap classes
     }
 }

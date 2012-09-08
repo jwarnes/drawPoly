@@ -75,6 +75,10 @@ namespace DrawPoly
         {
             Point start = this.shortLine.Midpoint;
             Point end = this.longLine.nearestPoint(start);
+            if (!this.longLine.isPointWithinSegment(end))
+            {
+                end = this.longLine.Midpoint;
+            }
 
             return new Line(start, end);
         }

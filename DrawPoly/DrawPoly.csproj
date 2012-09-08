@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CNode.cs" />
     <Compile Include="frmNavMesh.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -56,6 +57,7 @@
     <Compile Include="Line.cs" />
     <Compile Include="Link.cs" />
     <Compile Include="MathHelper.cs" />
+    <Compile Include="Node.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

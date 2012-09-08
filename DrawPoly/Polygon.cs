@@ -188,12 +188,6 @@ namespace DrawPoly
             return (area < 0 ? -area : area);
         }
 
-        public static Point findLinkPoint(Polygon poly1, Polygon poly2)
-        {
-            return new Point();
-            //TODO
-        }
-
         public Line getClosestEdge(Point p)
         {
             List<Line> lines = getLines();
