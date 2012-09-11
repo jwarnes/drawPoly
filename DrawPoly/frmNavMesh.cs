@@ -151,14 +151,26 @@ namespace DrawPoly
                         if (selectedPoly.Centroid != linkPolys[0].Centroid)
                         {
                             //second edge and create link
+
                             linkEnd = selectLine;
                             linkPolys[1] = selectedPoly;
-                            links.Add(new Link(linkStart, linkEnd, linkPolys[0], linkPolys[1]));
+                            Link newLink = new Link(linkStart, linkEnd, linkPolys[0], linkPolys[1]);
+                            
+                            //dont let the user create the same link twice
+                            Boolean linkExists = false;
+                            foreach (Link link in links)
+                            {
+                                if (link.ConnectingLine().Midpoint == newLink.ConnectingLine().Midpoint)
+                                    linkExists = true;
+                            }
+
+                            if(!linkExists)
+                                links.Add(newLink);
+
                             selectedPoly = null;
                             linkStart = null;
                             linkEnd = null;
                             linkPolys = new Polygon[2];
-                            //mode = Mode.Select;
                         }
                     }
                 }
@@ -429,13 +441,13 @@ namespace DrawPoly
                 if (selectLine != null)
                 {
                     if(linkPolys[0] == null)
-                        g.DrawLine(new Pen(Color.LimeGreen, 5), selectLine.Start, selectLine.End);
+                        g.DrawLine(new Pen(Color.LimeGreen, 3), selectLine.Start, selectLine.End);
                     if(linkPolys[0] != null && linkPolys[0].Centroid != selectedPoly.Centroid)
-                        g.DrawLine(new Pen(Color.LimeGreen, 5), selectLine.Start, selectLine.End);
+                        g.DrawLine(new Pen(Color.LimeGreen, 3), selectLine.Start, selectLine.End);
                 }
-                if (linkStart != null)
+                if (linkStart != null && selectLine != null)
                 {
-                    //TODO improve linking visuals
+                    g.DrawLine(new Pen(Color.LimeGreen, 3), linkStart.Start, linkStart.End);
                 }
             }
             #endregion
@@ -605,3 +617,4 @@ namespace DrawPoly
 
 //TODO: Polish UI
 //TODO implement serialization
+//TODO polish context help
