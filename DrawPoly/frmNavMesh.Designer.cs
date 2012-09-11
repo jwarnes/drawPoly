@@ -52,6 +52,7 @@
             this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.linkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateNodemapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnShowNodes = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.box)).BeginInit();
@@ -130,10 +131,11 @@
             this.saveToolStripButton,
             this.toolStripSeparator,
             this.btnDrawPoly,
-            this.toolStripButton1});
-            this.toolStrip1.Location = new System.Drawing.Point(137, 2);
+            this.toolStripButton1,
+            this.btnShowNodes});
+            this.toolStrip1.Location = new System.Drawing.Point(137, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(87, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(115, 31);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -143,21 +145,22 @@
             this.saveToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripButton.Image")));
             this.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveToolStripButton.Name = "saveToolStripButton";
-            this.saveToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.saveToolStripButton.Size = new System.Drawing.Size(23, 28);
             this.saveToolStripButton.Text = "&Save";
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator.Size = new System.Drawing.Size(6, 31);
             // 
             // btnDrawPoly
             // 
             this.btnDrawPoly.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnDrawPoly.Image = ((System.Drawing.Image)(resources.GetObject("btnDrawPoly.Image")));
+            this.btnDrawPoly.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnDrawPoly.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnDrawPoly.Name = "btnDrawPoly";
-            this.btnDrawPoly.Size = new System.Drawing.Size(23, 22);
+            this.btnDrawPoly.Size = new System.Drawing.Size(28, 28);
             this.btnDrawPoly.Text = "toolStripButton1";
             this.btnDrawPoly.Click += new System.EventHandler(this.btnDrawPoly_Click);
             // 
@@ -167,7 +170,7 @@
             this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 28);
             this.toolStripButton1.Text = "toolStripButton1";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -204,6 +207,7 @@
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newToolStripMenuItem.Size = new System.Drawing.Size(167, 24);
             this.newToolStripMenuItem.Text = "&New";
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
@@ -262,6 +266,17 @@
             this.generateNodemapToolStripMenuItem.Text = "Generate Nodemap";
             this.generateNodemapToolStripMenuItem.Click += new System.EventHandler(this.generateNodemapToolStripMenuItem_Click);
             // 
+            // btnShowNodes
+            // 
+            this.btnShowNodes.CheckOnClick = true;
+            this.btnShowNodes.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnShowNodes.Image = ((System.Drawing.Image)(resources.GetObject("btnShowNodes.Image")));
+            this.btnShowNodes.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnShowNodes.Name = "btnShowNodes";
+            this.btnShowNodes.Size = new System.Drawing.Size(23, 28);
+            this.btnShowNodes.Text = "toolStripButton2";
+            this.btnShowNodes.Click += new System.EventHandler(this.btnShowNodes_Click);
+            // 
             // frmNavMesh
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -315,6 +330,7 @@
         private System.Windows.Forms.ToolStripStatusLabel lblMode;
         private System.Windows.Forms.ToolStripStatusLabel dbg;
         private System.Windows.Forms.ToolStripMenuItem generateNodemapToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton btnShowNodes;
     }
 }
 

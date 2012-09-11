@@ -39,6 +39,8 @@ namespace DrawPoly
 
         private List<CNode> cnodes = new List<CNode>();
 
+        private bool showNodemap = false;
+
         public enum Mode
         {
             Select, Draw, Edit, Link
@@ -163,6 +165,8 @@ namespace DrawPoly
             }
             #endregion
 
+            RedrawNodes();
+
         }
 
         private void box_MouseMove(object sender, MouseEventArgs e)
@@ -206,6 +210,7 @@ namespace DrawPoly
             if (mode == Mode.Edit && drag == DragState.Vertex)
             {
                 selectedPoly.Vertices[moveVertexIndex] = e.Location;
+                RedrawNodes();
             }
             //drag the whole polygon
             if (mode == Mode.Edit && drag == DragState.Polygon)
@@ -220,6 +225,7 @@ namespace DrawPoly
                     selectedPoly.Vertices[i] = oldPoint;
                 }
                 movePolyPoint = e.Location;
+                RedrawNodes();
             }
             #endregion
 
@@ -287,7 +293,6 @@ namespace DrawPoly
                     //break links
                     breakAllLinks(selectedPoly);
                 }
-               
 
             }
         }
@@ -375,7 +380,7 @@ namespace DrawPoly
                 foreach (Link link in links)
                 {
                     Line l = link.ConnectingLine();
-                    g.DrawLine(new Pen(Color.Turquoise, 3), l.Start, l.End);
+                    g.DrawLine(new Pen(Color.Turquoise, 5), l.Start, l.End);
                 }
             }
             #endregion
@@ -436,7 +441,7 @@ namespace DrawPoly
             #endregion
 
             #region Draw Nodes
-            if (cnodes.Count > 0)
+            if (cnodes.Count > 0 && btnShowNodes.Checked)
             {
                 foreach (CNode node in cnodes)
                 {
@@ -464,7 +469,7 @@ namespace DrawPoly
 
         #endregion
 
-        #region Update
+        #region Methods
         private void breakAllLinks(Polygon poly)
         {
             List<Link> removeLinks = new List<Link>();
@@ -520,6 +525,32 @@ namespace DrawPoly
                 }
             }
         }
+
+        private void RedrawNodes()
+        {
+            if (polygons.Count > 0 && btnShowNodes.Checked)
+            {
+                CreateNodeMap();
+            }
+        }
+
+        //TODO: Add form resize method
+
+        private void NewMesh()
+        {
+            if (polygons.Count > 0)
+            {
+                if (MessageBox.Show("Discard current mesh?", "New Mesh", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    polygons.Clear();
+                    links.Clear();
+                    cnodes.Clear();
+                    mode = Mode.Draw;
+                    image.Dispose();
+                    box.Image = new Bitmap(panel1.Width, panel1.Height);
+                }
+            }
+        }
         #endregion
 
         #region UI Events
@@ -558,8 +589,19 @@ namespace DrawPoly
         {
             CreateNodeMap();
         }
+        private void btnShowNodes_Click(object sender, EventArgs e)
+        {
+            CreateNodeMap();
+            Render();
+        }
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewMesh();
+        }
         #endregion
 
-        //TODO: Implement Node, CNode, and NodeMap classes
     }
 }
+
+//TODO: Polish UI
+//TODO implement serialization
