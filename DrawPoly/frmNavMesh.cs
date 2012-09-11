@@ -39,8 +39,6 @@ namespace DrawPoly
 
         private List<CNode> cnodes = new List<CNode>();
 
-        private bool showNodemap = false;
-
         public enum Mode
         {
             Select, Draw, Edit, Link
@@ -100,6 +98,7 @@ namespace DrawPoly
                     else if (points.Count == 0)
                     {
                         mode = Mode.Select;
+                        Uncheck();
                     }
                 }
             }
@@ -136,6 +135,7 @@ namespace DrawPoly
                     linkStart = null;
                     linkEnd = null;
                     mode = Mode.Select;
+                    Uncheck();
                 }
                 if (e.Button == MouseButtons.Left)
                 {
@@ -200,9 +200,12 @@ namespace DrawPoly
             #endregion
 
             #region Select Mode
+            if (mode == Mode.Select && polygons.Count < 1)
+                help.Text = "No polygons to select yet";
             if (mode == Mode.Select && polygons.Count > 0)
             {
                 selectPoly = null;
+                help.Text = "Select a polygon";
                 foreach (Polygon poly in polygons)
                 {
                     if (poly.Intersects(e.Location))
@@ -583,16 +586,27 @@ namespace DrawPoly
             }
         }
 
+        private void Uncheck()
+        {
+            btnLink.Checked = false;
+            btnDrawPoly.Checked = false;
+            btnDeletePoly.Checked = false;
+            btnUnlink.Checked = false;
+        }
         private void btnDrawPoly_Click(object sender, EventArgs e)
         {
+            Uncheck();
+            btnDrawPoly.Checked = true;
             mode = Mode.Draw;
         }
         private void toolStripButton1_Click(object sender, EventArgs e)
             {
                 loadNewBG();
             }
-        private void linkToolStripMenuItem_Click(object sender, EventArgs e)
+        private void btnLink_Click(object sender, EventArgs e)
         {
+            Uncheck();
+            btnLink.Checked = true;
             linkStart = null;
             linkEnd = null;
             mode = Mode.Link;
@@ -612,9 +626,70 @@ namespace DrawPoly
         }
         #endregion
 
+        #region UI Tooltip
+        private void btnNew_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "New";
+            help.Text = "Discard the current navmesh and create a new one";
+        }
+
+        private void btnSave_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Save";
+            help.Text = "Save the navmesh to disc";
+        }
+
+        private void btnOpen_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Open";
+            help.Text = "Open a navmesh file";
+        }
+
+        private void btnDrawPoly_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Draw";
+            help.Text = "Draw a new polygon which represents a walkable area";
+        }
+
+        private void btnDeletePoly_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Delete";
+            help.Text = "Remove a polygon from the mesh";
+        }
+
+        private void btnLink_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Link";
+            help.Text = "Link edges to create a connection between polygons";
+        }
+
+        private void btnUnlink_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Unlink";
+            help.Text = "Remove a link between polygons";
+        }
+
+        private void btnNewBG_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Background";
+            help.Text = "Add a background image to draw over";
+        }
+
+        private void btnClearBG_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Clear Background";
+            help.Text = "Clear the background image";
+        }
+
+        private void btnShowNodes_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Nodes";
+            help.Text = "Toggles the pathfinding nodemap overlay";
+        }
+        #endregion
+
     }
 }
 
-//TODO: Polish UI
 //TODO implement serialization
 //TODO polish context help

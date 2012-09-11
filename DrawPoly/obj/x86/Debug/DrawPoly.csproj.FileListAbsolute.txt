@@ -52,3 +52,12 @@ C:\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.frmNavMesh.resources
 C:\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Properties.Resources.resources
 C:\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.exe
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.pdb
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\bin\Debug\DrawPoly.exe
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\bin\Debug\DrawPoly.pdb
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.frmNavMesh.resources
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\obj\x86\Debug\DrawPoly.Properties.Resources.resources
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\F22207\Desktop\drawPoly\DrawPoly\obj\x86\Debug\GenerateResource.write.1.tlog
