@@ -51,6 +51,9 @@
             this.btnClearBG = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.btnShowNodes = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnTest = new System.Windows.Forms.ToolStripButton();
+            this.btnHelp = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.box)).BeginInit();
@@ -134,7 +137,10 @@
             this.btnNewBG,
             this.btnClearBG,
             this.toolStripSeparator5,
-            this.btnShowNodes});
+            this.btnShowNodes,
+            this.toolStripSeparator3,
+            this.btnTest,
+            this.btnHelp});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(475, 25);
@@ -149,6 +155,7 @@
             this.btnNew.Name = "btnNew";
             this.btnNew.Size = new System.Drawing.Size(23, 22);
             this.btnNew.Text = "&New";
+            this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
             this.btnNew.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnNew_MouseMove);
             // 
             // btnSave
@@ -159,6 +166,7 @@
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(23, 22);
             this.btnSave.Text = "&Save";
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             this.btnSave.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnSave_MouseMove);
             // 
             // btnOpen
@@ -169,6 +177,7 @@
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(23, 22);
             this.btnOpen.Text = "&Open";
+            this.btnOpen.Click += new System.EventHandler(this.btnOpen_Click);
             this.btnOpen.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnOpen_MouseMove);
             // 
             // toolStripSeparator
@@ -197,6 +206,7 @@
             this.btnDeletePoly.Name = "btnDeletePoly";
             this.btnDeletePoly.Size = new System.Drawing.Size(23, 22);
             this.btnDeletePoly.Text = "Delete Polygon";
+            this.btnDeletePoly.Click += new System.EventHandler(this.btnDeletePoly_Click);
             this.btnDeletePoly.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnDeletePoly_MouseMove);
             // 
             // toolStripSeparator1
@@ -224,6 +234,7 @@
             this.btnUnlink.Name = "btnUnlink";
             this.btnUnlink.Size = new System.Drawing.Size(23, 22);
             this.btnUnlink.Text = "Break Link";
+            this.btnUnlink.Click += new System.EventHandler(this.btnUnlink_Click);
             this.btnUnlink.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnUnlink_MouseMove);
             // 
             // toolStripSeparator2
@@ -250,6 +261,7 @@
             this.btnClearBG.Name = "btnClearBG";
             this.btnClearBG.Size = new System.Drawing.Size(23, 22);
             this.btnClearBG.Text = "Clear backdrop";
+            this.btnClearBG.Click += new System.EventHandler(this.btnClearBG_Click);
             this.btnClearBG.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnClearBG_MouseMove);
             // 
             // toolStripSeparator5
@@ -268,6 +280,32 @@
             this.btnShowNodes.Text = "Show Nodes";
             this.btnShowNodes.Click += new System.EventHandler(this.btnShowNodes_Click);
             this.btnShowNodes.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnShowNodes_MouseMove);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnTest
+            // 
+            this.btnTest.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnTest.Image = ((System.Drawing.Image)(resources.GetObject("btnTest.Image")));
+            this.btnTest.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(23, 22);
+            this.btnTest.Text = "test";
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            this.btnTest.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnTest_MouseMove);
+            // 
+            // btnHelp
+            // 
+            this.btnHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnHelp.Image = ((System.Drawing.Image)(resources.GetObject("btnHelp.Image")));
+            this.btnHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(23, 22);
+            this.btnHelp.Text = "He&lp";
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // frmNavMesh
             // 
@@ -318,6 +356,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton btnClearBG;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripButton btnTest;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton btnHelp;
     }
 }
 

@@ -23,6 +23,7 @@ namespace DrawPoly
         Graphics g;
         private Point currentDrawPoint;
         private Image image;
+        private bool saved = true;
 
         private List<Polygon> polygons = new List<Polygon>();
         private Polygon selectPoly;
@@ -39,9 +40,10 @@ namespace DrawPoly
 
         private List<CNode> cnodes = new List<CNode>();
 
+
         public enum Mode
         {
-            Select, Draw, Edit, Link
+            Select, Draw, Edit, Link, Delete, Unlink
         }
 
         private enum DragState
@@ -49,8 +51,8 @@ namespace DrawPoly
             None, Vertex, Polygon
         }
 
-        Mode mode = Mode.Select;
-        DragState drag = DragState.None;
+        private Mode mode = Mode.Select;
+        private DragState drag = DragState.None;
 
         public frmNavMesh()
         {
@@ -77,9 +79,17 @@ namespace DrawPoly
             {
                 if (e.Button == MouseButtons.Left)
                 {
+                    saved = false;
+                    //create new polygon
                     if (points.Count > 2 && MathHelper.GetDistanceBetweenPoints(e.Location, points.First()) <= 20)
                     {
-                        polygons.Add(new Polygon(points));
+                        Polygon newPoly = new Polygon(points);
+                        foreach (Polygon poly in polygons)
+                        {
+                            if (poly.ID >= newPoly.ID)
+                                newPoly.ID = poly.ID + 1;
+                        }
+                        polygons.Add(newPoly);
                         points.Clear();
                     }
                     else
@@ -87,6 +97,7 @@ namespace DrawPoly
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
+                    saved = false;
                     if (points.Count > 1)
                     {
                         points.RemoveAt(points.Count - 1);
@@ -98,7 +109,7 @@ namespace DrawPoly
                     else if (points.Count == 0)
                     {
                         mode = Mode.Select;
-                        Uncheck();
+                        ClearMode();
                     }
                 }
             }
@@ -113,6 +124,32 @@ namespace DrawPoly
                     selectPoly = null;
 
                     mode = Mode.Edit;
+                }
+            }
+            #endregion
+
+            #region Delete Mode
+            if (mode == Mode.Delete)
+            {
+                if (e.Button == MouseButtons.Left && selectPoly != null)
+                {
+                    if (MessageBox.Show("Deleting polygons cannot be undone.",
+                        "Confirm Polycide", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                    {
+                        //delete polygon from list
+                        breakAllLinks(selectPoly);
+                        polygons.Remove(selectPoly);
+                        selectPoly = null;
+                        RedrawNodes();
+                        Render();
+                        saved = false;
+                    }
+                }
+               if (e.Button == MouseButtons.Right)
+                {
+                    btnDeletePoly.Checked = false;
+                    mode = Mode.Select;
+                    selectPoly = null;
                 }
             }
             #endregion
@@ -135,7 +172,7 @@ namespace DrawPoly
                     linkStart = null;
                     linkEnd = null;
                     mode = Mode.Select;
-                    Uncheck();
+                    ClearMode();
                 }
                 if (e.Button == MouseButtons.Left)
                 {
@@ -152,6 +189,7 @@ namespace DrawPoly
                         {
                             //second edge and create link
 
+                            saved = false;
                             linkEnd = selectLine;
                             linkPolys[1] = selectedPoly;
                             Link newLink = new Link(linkStart, linkEnd, linkPolys[0], linkPolys[1]);
@@ -212,6 +250,24 @@ namespace DrawPoly
                     {
                         selectPoly = poly;
                         help.Text = "Click to edit this polygon";
+                    }
+                }
+            }
+            #endregion
+
+            #region Delete Mode
+            if (mode == Mode.Delete && polygons.Count < 1)
+                help.Text = "No polygons to delete";
+            if (mode == Mode.Delete && polygons.Count > 0)
+            {
+                selectPoly = null;
+                help.Text = "Select a polygon to delete";
+                foreach (Polygon poly in polygons)
+                {
+                    if (poly.Intersects(e.Location))
+                    {
+                        selectPoly = poly;
+                        help.Text = "Click to remove this polygon";
                     }
                 }
             }
@@ -287,7 +343,7 @@ namespace DrawPoly
 
                 if (drag == DragState.None)
                 {
-
+                    saved = false;
                     //drag polygon
 
                     if (selectedPoly.Intersects(e.Location))
@@ -369,7 +425,7 @@ namespace DrawPoly
             {
                 foreach (Polygon poly in polygons)
                 {
-                    if (mode == Mode.Select || mode == Mode.Edit)
+                    if (mode == Mode.Select || mode == Mode.Edit || mode== Mode.Delete)
                     {
                         if (poly != selectPoly && poly != selectedPoly)
                             poly.Draw(g);
@@ -378,7 +434,8 @@ namespace DrawPoly
                             Color fill = poly.IsConcave() ? Color.FromArgb(100, Color.Red) : Color.FromArgb(100, Color.MediumBlue);
                             g.FillPolygon(new SolidBrush(fill), selectPoly.VerticesArray);
 
-                            g.DrawPolygon(new Pen(Color.Orange, 4), selectPoly.VerticesArray);
+                            Color outline = (mode == Mode.Delete) ? Color.Red : Color.Orange;
+                            g.DrawPolygon(new Pen(outline, 4), selectPoly.VerticesArray);
                         }
                     }
                     else
@@ -401,7 +458,7 @@ namespace DrawPoly
             #endregion
 
             #region Draw Selected Polygon
-            if (mode == Mode.Edit || mode == Mode.Select  & selectedPoly != null)
+            if (mode == Mode.Edit || mode == Mode.Select && selectedPoly != null)
             {
 
                 //draw outline
@@ -485,6 +542,7 @@ namespace DrawPoly
         #endregion
 
         #region Methods
+
         private void breakAllLinks(Polygon poly)
         {
             List<Link> removeLinks = new List<Link>();
@@ -549,26 +607,58 @@ namespace DrawPoly
             }
         }
 
-        //TODO: Add form resize method
-
         private void NewMesh()
         {
-            if (polygons.Count > 0)
+
+            polygons.Clear();
+            links.Clear();
+            cnodes.Clear();
+            ClearMode();
+
+            this.Size = new Size(491, 354);
+            mode = Mode.Select;
+            image = new Bitmap(panel1.Width, panel1.Height);
+            redrawGraphics();
+            Render();
+        }
+
+        private void SaveMesh()
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Title = "Save Navmesh";
+            save.Filter = "garden Navmesh|*.nav";
+            save.ShowDialog();
+
+            if (save.FileName != "")
             {
-                if (MessageBox.Show("Discard current mesh?", "New Mesh", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    polygons.Clear();
-                    links.Clear();
-                    cnodes.Clear();
-                    mode = Mode.Draw;
-                    image.Dispose();
-                    box.Image = new Bitmap(panel1.Width, panel1.Height);
-                }
+                NavMesh mesh = new NavMesh(polygons, links);
+                mesh.writeToFile(save.FileName);
+                saved = true;
             }
         }
-        #endregion
 
-        #region UI Events
+        private void LoadMesh()
+        {
+            OpenFileDialog load = new OpenFileDialog();
+            load.Title = "Load Navmesh";
+            load.Filter = "garden Navmesh|*.nav|Plaintext File|*.txt;*.xml|All Files|*.*";
+            load.ShowDialog();
+
+            if (load.FileName != "")
+            {
+                NavMesh mesh = new NavMesh();
+                mesh.readFromFile(load.FileName);
+                LoadFromMesh(mesh);
+                saved = true;
+            }
+        }
+
+        private void LoadFromMesh(NavMesh mesh)
+        {
+            NewMesh();
+            polygons = mesh.Polygons;
+            links = mesh.Links;
+        }
 
         private void loadNewBG()
         {
@@ -580,22 +670,34 @@ namespace DrawPoly
             if (open.FileName != "")
             {
                 this.image = Image.FromFile(open.FileName);
-                this.Size = new Size(image.Size.Width+18, image.Size.Height+95);
+                this.Size = new Size(image.Size.Width + 18, image.Size.Height + 95);
                 redrawGraphics();
                 Render();
             }
         }
 
-        private void Uncheck()
+        private void ClearMode()
         {
             btnLink.Checked = false;
             btnDrawPoly.Checked = false;
             btnDeletePoly.Checked = false;
             btnUnlink.Checked = false;
+
+            selectedPoly = null;
+            selectLine = null;
+            selectPoly = null;
+            linkEnd = null;
+            linkStart = null;
+            linkPolys = new Polygon[2];
+            points.Clear();
         }
+        #endregion
+
+        #region UI Events
+
         private void btnDrawPoly_Click(object sender, EventArgs e)
         {
-            Uncheck();
+            ClearMode();
             btnDrawPoly.Checked = true;
             mode = Mode.Draw;
         }
@@ -605,7 +707,7 @@ namespace DrawPoly
             }
         private void btnLink_Click(object sender, EventArgs e)
         {
-            Uncheck();
+            ClearMode();
             btnLink.Checked = true;
             linkStart = null;
             linkEnd = null;
@@ -620,9 +722,52 @@ namespace DrawPoly
             CreateNodeMap();
             Render();
         }
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        private void btnNew_Click(object sender, EventArgs e)
         {
-            NewMesh();
+            if (polygons.Count > 0)
+            {
+                if (MessageBox.Show("Discard current mesh?", "New Mesh", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    NewMesh();
+                }
+            }
+        }
+        private void btnClearBG_Click(object sender, EventArgs e)
+        {
+            this.Size = new Size(651, 434);
+            image = new Bitmap(panel1.Width, panel1.Height);
+            redrawGraphics();
+            Render();
+        }
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            SaveMesh();
+        }
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            if (polygons.Count > 0 && !saved)
+            {
+                if (MessageBox.Show("Discard the current mesh?", "Load Mesh", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    LoadMesh();
+                }
+            }
+            else
+                LoadMesh();
+        }
+        private void btnDeletePoly_Click(object sender, EventArgs e)
+        {
+            ClearMode();
+            btnDeletePoly.Checked = true;
+            mode = Mode.Delete;
+        }
+        private void btnUnlink_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("This button doesn't work yet. \nIf you need to break a link, moving a polygon will break all links connected to it.", "Temporary Help Robot");
+        }
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Just click around and figure stuff out. Start by clicking the draw polygon tool.\nIf you draw a polygon and it shows up red, that means it's a concave polygon.\n\nThose aren't allowed.","Temporary Help Robot");
         }
         #endregion
 
@@ -686,10 +831,17 @@ namespace DrawPoly
             lblMode.Text = "Nodes";
             help.Text = "Toggles the pathfinding nodemap overlay";
         }
+
+        private void btnTest_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Verify";
+            help.Text = "Check the nodemap for errors";
+        }
         #endregion
 
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+        }
     }
 }
 
-//TODO implement serialization
-//TODO polish context help

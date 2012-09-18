@@ -11,7 +11,16 @@ namespace DrawPoly
     class Polygon
     {
         #region Fields
+        
         private List<Point> vertices = new List<Point>();
+        private int id = 1;
+
+        public int ID
+        {
+            get { return id;}
+            set { id = value; }
+        }
+
         public List<Point> Vertices
         {
             get { return vertices; }
