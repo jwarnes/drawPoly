@@ -691,6 +691,43 @@ namespace DrawPoly
             linkPolys = new Polygon[2];
             points.Clear();
         }
+
+        private void Verify()
+        {
+            bool concave = false;
+            bool overlap = false;
+
+            foreach (Polygon poly in polygons)
+            {
+                if (poly.IsConcave())
+                    concave = true;
+                foreach (Point v in poly.Vertices)
+                {
+                    foreach (Polygon testPoly in polygons)
+                    {
+                        if (testPoly == poly)
+                            continue;
+                        if (testPoly.Intersects(v))
+                            overlap = true;
+                    }
+                }
+            }
+            string message = "Navmesh is ok!";
+
+            if (concave)
+                message = "Some of your polygons are concave. \nGo back and fix any polys that are showing up red.";
+            if (overlap)
+                message = "You have overlapping polygons. \nPolys should be placed closely, but not overlapping.";
+
+            if (concave && overlap)
+            {
+                message = "Some of your polygons are concave. \nGo back and fix any polys that are showing up red.";
+                message += "\n\nYou have overlapping polygons. \nPolys should be placed closely, but not overlapping.";
+            }
+
+
+            MessageBox.Show(message, "Verify Mesh");
+        }
         #endregion
 
         #region UI Events
@@ -769,6 +806,10 @@ namespace DrawPoly
         {
             MessageBox.Show("Just click around and figure stuff out. Start by clicking the draw polygon tool.\nIf you draw a polygon and it shows up red, that means it's a concave polygon.\n\nThose aren't allowed.","Temporary Help Robot");
         }
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            Verify();
+        }
         #endregion
 
         #region UI Tooltip
@@ -835,13 +876,18 @@ namespace DrawPoly
         private void btnTest_MouseMove(object sender, MouseEventArgs e)
         {
             lblMode.Text = "Verify";
-            help.Text = "Check the nodemap for errors";
+            help.Text = "Check the mesh for errors";
+        }
+
+        private void btnHelp_MouseMove(object sender, MouseEventArgs e)
+        {
+            lblMode.Text = "Help";
+            help.Text = "Helps you out";
         }
         #endregion
 
-        private void btnTest_Click(object sender, EventArgs e)
-        {
-        }
+
+        
     }
 }
 

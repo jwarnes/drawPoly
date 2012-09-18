@@ -306,6 +306,7 @@
             this.btnHelp.Size = new System.Drawing.Size(23, 22);
             this.btnHelp.Text = "He&lp";
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
+            this.btnHelp.MouseMove += new System.Windows.Forms.MouseEventHandler(this.btnHelp_MouseMove);
             // 
             // frmNavMesh
             // 
